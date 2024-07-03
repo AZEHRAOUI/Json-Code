@@ -1,0 +1,671 @@
+[
+    {
+        "id": "69fe925b8455b5c3",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "pool tema",
+        "func": "let startDate = new Date(msg.payload);\nlet startTimeISO = new Date(startDate.setHours(0, 0, 0, 0));\nlet startTime = new Date(startTimeISO.getTime() - startTimeISO.getTimezoneOffset() * 60000).toISOString();\nlet endTimeISO = new Date(startDate.setHours(23, 59, 59, 999));\nlet endTime = new Date(endTimeISO.getTime() - endTimeISO.getTimezoneOffset() * 60000).toISOString();\nmsg.query = `from(bucket: \"Energie_groupe\")\n    |> range(start: ${startTime}, stop: ${endTime})\n    |> filter(fn: (r) => r._measurement == \"Energie totale\")\n    |> filter(fn: (r) => r._field == \"value\")\n    |> filter(fn: (r) => r.source == \"GHYD_STE_001_POOL_TEMA_STE\")`;\n\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 180,
+        "wires": [
+            [
+                "9873f80ba091e64b"
+            ]
+        ]
+    },
+    {
+        "id": "a13b58a2c9010ce4",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "pool tema",
+        "func": "if (msg.payload && msg.payload.length > 0) {\n    let taille = msg.payload.length;\n    let time_first = msg.payload[0]._time;\n    let first_value = msg.payload[0]._value;\n    let time_last = msg.payload[taille - 1]._time;\n    let last_value = msg.payload[taille - 1]._value;\n    let Energie_difference = last_value - first_value;\n\n    msg.payload = {\n        topic: \"POOL TEMA\",\n        time_first,\n        first_value,\n        time_last,\n        last_value,\n        EnergieConsomme: Energie_difference.toFixed(1),\n        Prix: (Energie_difference * 0.25).toFixed(3)\n    };\n} else {\n    msg.payload = {\n        topic: \"POOL TEMA\",\n        time_first: \"NaN\",\n        first_value: \"NaN\",\n        time_last: \"NaN\",\n        last_value: \"NaN\",\n        EnergieConsomme: \"NaN\",\n        Prix: \"NaN\"\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 180,
+        "wires": [
+            [
+                "73f3b244f86772c7"
+            ]
+        ]
+    },
+    {
+        "id": "73f3b244f86772c7",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "MTS100",
+        "order": 4,
+        "width": 6,
+        "height": 4,
+        "format": "\n<div class=\"icon_flat_rect\">\n    <ul>\n        <li style=\"background: #FFA060;\">\n            <div class=\"text\">\n                <p_solar ng-bind-html=\"msg.payload.topic\"><span>name</span></p_solar>\n                <br>\n                <p_solar><span ng-bind-html=\"msg.payload.Prix\">0</span>€</p_solar>\n                <br>\n                <p_solar ng-bind-html=\"msg.payload.EnergieConsomme\"><span>0.1</span></p_solar><p_solar>KWh</p_solar>\n            </div>\n        </li>\n    </ul>\n</div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1100,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6f754b5fa1121944",
+        "type": "ui_date_picker",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "label": "date",
+        "group": "5ce9fa6184d4746a",
+        "order": 2,
+        "width": 11,
+        "height": 1,
+        "passthru": true,
+        "topic": "topic",
+        "topicType": "msg",
+        "className": "",
+        "x": 230,
+        "y": 320,
+        "wires": [
+            [
+                "69fe925b8455b5c3",
+                "fa249c8cf0d827e3",
+                "57f4caaf4164d75d",
+                "2908ac29acb5edec",
+                "660635c6b959cc83",
+                "e0d10c251e8e1028",
+                "e9999fe961cf4973"
+            ]
+        ]
+    },
+    {
+        "id": "fa249c8cf0d827e3",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "mts100",
+        "func": "let startDate = new Date(msg.payload);\nlet startTimeISO = new Date(startDate.setHours(0, 0, 0, 0));\nlet startTime = new Date(startTimeISO.getTime() - startTimeISO.getTimezoneOffset() * 60000).toISOString();\nlet endTimeISO = new Date(startDate.setHours(23, 59, 59, 999));\nlet endTime = new Date(endTimeISO.getTime() - endTimeISO.getTimezoneOffset() * 60000).toISOString();\nmsg.query = `from(bucket: \"Energie_groupe\")\n    |> range(start: ${startTime}, stop: ${endTime})\n    |> filter(fn: (r) => r._measurement == \"Energie totale\")\n    |> filter(fn: (r) => r._field == \"value\")\n    |> filter(fn: (r) => r.source == \"GHYD_STE_003_MTS_1\")`;\n\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 240,
+        "wires": [
+            [
+                "8f91cceec9e345c6"
+            ]
+        ]
+    },
+    {
+        "id": "85ff0cca0d57abd9",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "mts100",
+        "func": "if (msg.payload && msg.payload.length > 0) {\n    let taille = msg.payload.length;\n    let time_first = msg.payload[0]._time;\n    let first_value = msg.payload[0]._value;\n    let time_last = msg.payload[taille - 1]._time;\n    let last_value = msg.payload[taille - 1]._value;\n    let Energie_difference = last_value - first_value;\n\n    msg.payload = {\n        topic: \"MTS100\",\n        time_first,\n        first_value,\n        time_last,\n        last_value,\n        EnergieConsomme: Energie_difference.toFixed(1),\n        Prix: (Energie_difference * 0.25).toFixed(3)\n    };\n} else {\n    msg.payload = {\n        topic: \"MTS100\",\n        time_first: \"NaN\",\n        first_value: \"NaN\",\n        time_last: \"NaN\",\n        last_value: \"NaN\",\n        EnergieConsomme: \"NaN\",\n        Prix: \"NaN\"\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 240,
+        "wires": [
+            [
+                "24a5b1f96c536033"
+            ]
+        ]
+    },
+    {
+        "id": "24a5b1f96c536033",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "MTS250",
+        "order": 5,
+        "width": 6,
+        "height": 3,
+        "format": "<div class=\"icon_flat_rect\">\n    <ul>\n        <li>\n            <div class=\"text\">\n                <p_solar ng-bind-html=\"msg.payload.topic\"><span>name</span></p_solar>\n                <br>\n                <p_solar><span ng-bind-html=\"msg.payload.Prix\">0</span>€</span></p_solar>\n                <br>\n                <p_solar ng-bind-html=\"msg.payload.EnergieConsomme\"><span>0.1</span>KWh</span></p_solar>\n            </div>\n        </li>\n    </ul>\n</div>\n\n<style>\n.unit, .currency {\n    margin-left: 5px; \n}\n</style>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1080,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "57f4caaf4164d75d",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "mts250",
+        "func": "let startDate = new Date(msg.payload);\nlet startTimeISO = new Date(startDate.setHours(0, 0, 0, 0));\nlet startTime = new Date(startTimeISO.getTime() - startTimeISO.getTimezoneOffset() * 60000).toISOString();\nlet endTimeISO = new Date(startDate.setHours(23, 59, 59, 999));\nlet endTime = new Date(endTimeISO.getTime() - endTimeISO.getTimezoneOffset() * 60000).toISOString();\nmsg.query = `from(bucket: \"Energie_groupe\")\n    |> range(start: ${startTime}, stop: ${endTime})\n    |> filter(fn: (r) => r._measurement == \"Energie totale\")\n    |> filter(fn: (r) => r._field == \"value\")\n    |> filter(fn: (r) => r.source == \"GHYD_STE_004_MTS_2\")`;\n\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 280,
+        "wires": [
+            [
+                "cc1849ef55630a9c"
+            ]
+        ]
+    },
+    {
+        "id": "de2ad2e52f890fef",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "mts250",
+        "func": "if (msg.payload && msg.payload.length > 0) {\n    let taille = msg.payload.length;\n    let time_first = msg.payload[0]._time;\n    let first_value = msg.payload[0]._value;\n    let time_last = msg.payload[taille - 1]._time;\n    let last_value = msg.payload[taille - 1]._value;\n    let Energie_difference = last_value - first_value;\n\n    msg.payload = {\n        topic: \"MTS250\",\n        time_first,\n        first_value,\n        time_last,\n        last_value,\n        EnergieConsomme: Energie_difference.toFixed(1),\n        Prix: (Energie_difference * 0.25).toFixed(3)\n    };\n} else {\n    msg.payload = {\n        topic: \"MTS250\",\n        time_first: \"NaN\",\n        first_value: \"NaN\",\n        time_last: \"NaN\",\n        last_value: \"NaN\",\n        EnergieConsomme: \"NaN\",\n        Prix: \"NaN\"\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 280,
+        "wires": [
+            [
+                "f827a78a8e542d54"
+            ]
+        ]
+    },
+    {
+        "id": "f827a78a8e542d54",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "QUIRI",
+        "order": 6,
+        "width": 6,
+        "height": 3,
+        "format": "\n<div class=\"icon_flat_rect\">\n    <ul>\n        <li style=\"background: #7CC422;\">\n            <div class=\"text\">\n                <p_solar ng-bind-html=\"msg.payload.topic\"><span>name</span></p_solar>\n                <br>\n                <p_solar><span ng-bind-html=\"msg.payload.Prix\">0</span>€</p_solar>\n                <br>\n                <p_solar ng-bind-html=\"msg.payload.EnergieConsomme\"><span>0.1</span></p_solar><p_solar>KWh</p_solar>\n            </div>\n        </li>\n    </ul>\n</div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1070,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2908ac29acb5edec",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "QUIRI",
+        "func": "let startDate = new Date(msg.payload);\nlet startTimeISO = new Date(startDate.setHours(0, 0, 0, 0));\nlet startTime = new Date(startTimeISO.getTime() - startTimeISO.getTimezoneOffset() * 60000).toISOString();\nlet endTimeISO = new Date(startDate.setHours(23, 59, 59, 999));\nlet endTime = new Date(endTimeISO.getTime() - endTimeISO.getTimezoneOffset() * 60000).toISOString();\nmsg.query = `from(bucket: \"Energie_groupe\")\n    |> range(start: ${startTime}, stop: ${endTime})\n    |> filter(fn: (r) => r._measurement == \"Energie totale\")\n    |> filter(fn: (r) => r._field == \"value\")\n    |> filter(fn: (r) => r.source == \"GHYD_STE_005_QUIRI\")`;\n\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 320,
+        "wires": [
+            [
+                "6274797cadeb566e"
+            ]
+        ]
+    },
+    {
+        "id": "fd26994f809bcf37",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "QUIRI",
+        "func": "if (msg.payload && msg.payload.length > 0) {\n    let taille = msg.payload.length;\n    let time_first = msg.payload[0]._time;\n    let first_value = msg.payload[0]._value;\n    let time_last = msg.payload[taille - 1]._time;\n    let last_value = msg.payload[taille - 1]._value;\n    let Energie_difference = last_value - first_value;\n\n    msg.payload = {\n        topic: \"QUIRI\",\n        time_first,\n        first_value,\n        time_last,\n        last_value,\n        EnergieConsomme: Energie_difference.toFixed(1),\n        Prix: (Energie_difference * 0.25).toFixed(3)\n    };\n} else {\n    msg.payload = {\n        topic: \"QUIRI\",\n        time_first: \"NaN\",\n        first_value: \"NaN\",\n        time_last: \"NaN\",\n        last_value: \"NaN\",\n        EnergieConsomme: \"NaN\",\n        Prix: \"NaN\"\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 320,
+        "wires": [
+            [
+                "d7f364b2e5e1fa5b"
+            ]
+        ]
+    },
+    {
+        "id": "d7f364b2e5e1fa5b",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "POOL TEMA",
+        "order": 7,
+        "width": 6,
+        "height": 3,
+        "format": "\n<div class=\"icon_flat_rect\">\n    <ul>\n        <li style=\"background: #FFA060;\">\n            <div class=\"text\">\n                <p_solar ng-bind-html=\"msg.payload.topic\"><span>name</span></p_solar>\n                <br>\n                <p_solar><span ng-bind-html=\"msg.payload.Prix\">0</span>€</p_solar>\n                <br>\n                <p_solar ng-bind-html=\"msg.payload.EnergieConsomme\"><span>0.1</span></p_solar><p_solar>KWh</p_solar>\n            </div>\n        </li>\n    </ul>\n</div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1050,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "660635c6b959cc83",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "POOL TEMA FOSSE",
+        "func": "let startDate = new Date(msg.payload);\nlet startTimeISO = new Date(startDate.setHours(0, 0, 0, 0));\nlet startTime = new Date(startTimeISO.getTime() - startTimeISO.getTimezoneOffset() * 60000).toISOString();\nlet endTimeISO = new Date(startDate.setHours(23, 59, 59, 999));\nlet endTime = new Date(endTimeISO.getTime() - endTimeISO.getTimezoneOffset() * 60000).toISOString();\nmsg.query = `from(bucket: \"Energie\")\n    |> range(start: ${startTime}, stop: ${endTime})\n    |> filter(fn: (r) => r._measurement == \"Energie totale\")\n    |> filter(fn: (r) => r._field == \"value\")\n    |> filter(fn: (r) => r.source == \"GHYD_STE_002_TEMA_Fosse_2\")`;\n\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 360,
+        "wires": [
+            [
+                "499fdcad9feeee75"
+            ]
+        ]
+    },
+    {
+        "id": "f9385552ce55dbc6",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "POOL TEMA FOSSE",
+        "func": "if (msg.payload && msg.payload.length > 0) {\n    let taille = msg.payload.length;\n    let first_value = msg.payload[0]._value;\n    let last_value = msg.payload[taille - 1]._value;\n    let Energie_difference = last_value - first_value;\n\n    msg.payload = {\n        topic: \"POOL TEMA FOSSE\",\n        EnergieConsomme: Energie_difference.toFixed(1),\n        Prix: (Energie_difference * 0.25).toFixed(3)\n    };\n} else {\n    msg.payload = {\n        topic: \"POOL TEMA FOSSE\",\n        EnergieConsomme: \"NaN\",\n        Prix: \"NaN\"\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 360,
+        "wires": [
+            [
+                "43197ccb8bb237fb"
+            ]
+        ]
+    },
+    {
+        "id": "43197ccb8bb237fb",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "POOL TEMA FOSSE",
+        "order": 8,
+        "width": 6,
+        "height": 3,
+        "format": "\n<div class=\"icon_flat_rect\">\n    <ul>\n        <li style=\"background: #FFA060;\">\n            <div class=\"text\">\n                <p_solar ng-bind-html=\"msg.payload.topic\"><span>name</span></p_solar>\n                <br>\n                <p_solar><span ng-bind-html=\"msg.payload.Prix\">0</span>€</p_solar>\n                <br>\n                <p_solar ng-bind-html=\"msg.payload.EnergieConsomme\"><span>0.1</span></p_solar><p_solar>KWh</p_solar>\n            </div>\n        </li>\n    </ul>\n</div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1200,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e0d10c251e8e1028",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "STE SOUS SOL AC",
+        "func": "let startDate = new Date(msg.payload);\nlet startTimeISO = new Date(startDate.setHours(0, 0, 0, 0));\nlet startTime = new Date(startTimeISO.getTime() - startTimeISO.getTimezoneOffset() * 60000).toISOString();\nlet endTimeISO = new Date(startDate.setHours(23, 59, 59, 999));\nlet endTime = new Date(endTimeISO.getTime() - endTimeISO.getTimezoneOffset() * 60000).toISOString();\nmsg.query = `from(bucket: \"Energie_groupe\")\n    |> range(start: ${startTime}, stop: ${endTime})\n    |> filter(fn: (r) => r._measurement == \"Energie totale\")\n    |> filter(fn: (r) => r._field == \"value\")\n    |> filter(fn: (r) => r.source == \"STE_SOUS-SOL_AC\")`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 400,
+        "wires": [
+            [
+                "667af6669f1c1c6f"
+            ]
+        ]
+    },
+    {
+        "id": "aac3c8db5a7662cc",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "AC",
+        "func": "if (msg.payload && msg.payload.length > 0) {\n    let taille = msg.payload.length;\n    let time_first = msg.payload[0]._time;\n    let first_value = msg.payload[0]._value;\n    let time_last = msg.payload[taille - 1]._time;\n    let last_value = msg.payload[taille - 1]._value;\n    let Energie_difference = last_value - first_value;\n    global.set(\"Energie_acc\", Energie_difference);\n    msg.payload = {\n        topic: \"Air Comprimé\",\n        time_first,\n        first_value,\n        time_last,\n        last_value,\n        EnergieConsomme: Energie_difference.toFixed(1),\n        Prix: (Energie_difference * 0.25).toFixed(3)\n    };\n} else {\n    global.set(\"Energie_acc\", NaN);\n    msg.payload = {\n        topic: \"Air Comprimé\",\n        time_first: \"NaN\",\n        first_value: \"NaN\",\n        time_last: \"NaN\",\n        last_value: \"NaN\",\n        EnergieConsomme: \"NaN\",\n        Prix: \"NaN\"\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 400,
+        "wires": [
+            [
+                "26d8adad1fd5ec5b"
+            ]
+        ]
+    },
+    {
+        "id": "26d8adad1fd5ec5b",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "air c",
+        "order": 10,
+        "width": 6,
+        "height": 3,
+        "format": "<div class=\"icon_flat_rect\">\n    <ul>\n        <li style=\"background: #E68A3B;\">\n            <!-- Couleur plus sombre -->\n            <div class=\"text\">\n                <p_solar ng-bind-html=\"msg.payload.topic\"><span>name</span></p_solar>\n                <br>\n                <p_solar><span ng-bind-html=\"msg.payload.Prix\">0</span>€</p_solar>\n                <br>\n                <p_solar ng-bind-html=\"msg.payload.EnergieConsomme\"><span>0.1</span>Kwh</p_solar>\n                <p_solar>€</p_solar>\n            </div>\n        </li>\n    </ul>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1030,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e9999fe961cf4973",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "Volume_AC",
+        "func": "let startDate = new Date(msg.payload);\nlet startTimeISO = new Date(startDate.setHours(0, 0, 0, 0));\nlet startTime = new Date(startTimeISO.getTime() - startTimeISO.getTimezoneOffset() * 60000).toISOString();\nlet endTimeISO = new Date(startDate.setHours(23, 59, 59, 999));\nlet endTime = new Date(endTimeISO.getTime() - endTimeISO.getTimezoneOffset() * 60000).toISOString();\nmsg.query = `from(bucket: \"Volume\")\n    |> range(start: ${startTime}, stop: ${endTime})\n    |> filter(fn: (r) => r._measurement == \"Volume_AC\")\n    |> filter(fn: (r) => r._field == \"value\")\n    |> filter(fn: (r) => r.source == \"STE_MTS_airflowmeter\")`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 460,
+        "wires": [
+            [
+                "0f1b29e7ccd7f5fa"
+            ]
+        ]
+    },
+    {
+        "id": "a6da551cef550417",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "function 9",
+        "func": "if (msg.payload && msg.payload.length > 0) {\n    let taille = msg.payload.length;\n    let first_value = msg.payload[0]._value;\n    let last_value = msg.payload[taille - 1]._value;\n    let volume_consomme = last_value - first_value;\n\n    msg.payload = {\n        topic: \"Volume Air Comprimé\",\n        first_value,\n        last_value,\n        Volume_Consomme: volume_consomme.toFixed(2)\n    };\n} else {\n    msg.payload = {\n        topic: \"Volume Air Comprimé\",\n        first_value: \"NaN\",\n        last_value: \"NaN\",\n        Volume_Consomme: \"NaN\"\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 460,
+        "wires": [
+            [
+                "5297ebf75610bfc2"
+            ]
+        ]
+    },
+    {
+        "id": "5297ebf75610bfc2",
+        "type": "function",
+        "z": "1a9013b247e8c387",
+        "name": "function 10",
+        "func": "let Energie = global.get(\"Energie_acc\"); \nlet volume = msg.payload.Volume_Consomme;\nlet IPE = Energie / volume;\n\nmsg.payload = {\n    topic: \"IPE\",\n    anas: Energie, \n    volume: volume,\n    ipe: (IPE*1000).toFixed(0),\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 460,
+        "wires": [
+            [
+                "faaaa4cb17efb56a"
+            ]
+        ]
+    },
+    {
+        "id": "faaaa4cb17efb56a",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "ipe",
+        "order": 11,
+        "width": 6,
+        "height": 3,
+        "format": "<div class=\"icon_flat_rect\">\n    <ul>\n        <li style=\"background: #7EC8E3;\"> <!-- Couleur bleu ciel -->\n            <div class=\"text\">\n                <p_solar ng-bind-html=\"msg.payload.topic\"><span>name</span></p_solar>\n                <br>\n                <p_solar><span ng-bind-html=\"msg.payload.ipe\">0</span>Wh/m³</p_solar>\n                <br>\n            </div>\n        </li>\n    </ul>\n</div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1170,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "084cdf4c73b6a52a",
+        "type": "ui_template",
+        "z": "1a9013b247e8c387",
+        "group": "5ce9fa6184d4746a",
+        "name": "CSS",
+        "order": 15,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n/*\nbody.nr-dashboard-theme md-content md-card {\n    background-color: #10AEF7;\n    color: #111111;\n}\nbody.nr-dashboard-theme md-content md-card {\n    \n    color: red;\n    text-shadow: 4px 2px 4px #00000045;\n    box-shadow: 0 -1px 5px 1px #00000045;\n    border-radius: 12px;\n    border: 1px solid white;\n}\n\n.nr-dashboard-template p, .nr-dashboard-template h1, .nr-dashboard-template h2, .nr-dashboard-template h3, .nr-dashboard-template h4 {\n    color: #111111 !important;\n    background-color: #10AEF7 !important;\n}\n*/\n\n.icon_flat_rect>ul li{\n    width: 243px;\n    height: 105px;\n    float: left;\n    background: #10AEF7;\n    margin-bottom: 20px;\n    margin-right: 20px;\n    border-radius: 5px;\n    list-style-type: none;\n    \n}\n.icon_flat_rect>ul li .text{\n    /*float: right;*/\n    text-align: center;\n    margin-top: 10px;\n}\n.icon_flat_rect>ul li .text p_solar{\n    color: white;\n    text-align: center;\n    padding-right: 20px;\n    box-sizing: border-box;\n}\n.icon_flat_rect>ul li .text p_solar span{\n    font-size: 32px;\n}\n</style>\n\n\n\n<!--div ng-bind-html=\"msg.payload\"></div-->\n\n    <!--div class=\"groupTitle\"><span>Energy Dashboard</span></div>\n        <div class=\"icon_flat_rect\">\n            <ul>\n                <li>\n                    <div class=\"text\">\n                        <p ng-bind-html=\"msg.topic\">name</p>\n                        <p><span ng-bind-html=\"msg.payload\">0</span>kWh</p>\n                    </div>\n                </li>\n                <li style=\"background: #7CC422;\">\n                    <div class=\"text\">\n                        <p id=\"dispname2\">name</p>\n                        <p><span id=\"disp2\">0</span></p>\n                    </div>\n                </li>\n                <li style=\"background: #FFA060;\">\n                    <div class=\"text\">\n                        <p id=\"dispname3\">name</p>\n                        <p><span id=\"disp3\">0</span></p>\n                    </div>\n                </li>\n                <li style=\"background: #FEC107;\">\n                    <div class=\"text\">\n                        <p id=\"dispname4\">name</p>\n                        <p><span id=\"disp4\">0</span></p>\n                    </div>\n                </li>\n                <li style=\"background: #46D1E4;\">\n                    <div class=\"text\">\n                        <p id=\"dispname5\">name</p>\n                        <p><span id=\"disp5\">0</span></p>\n                    </div>\n                </li>\n                <li style=\"background: #60D0FE;\">\n                    <div class=\"text\">\n                        <p id=\"dispname6\">name</p>\n                        <p><span id=\"disp6\">0</span></p>\n                    </div>\n                </li>\n                \n                <div class=\"clear\"></div>\n            </ul>\n        </div>\n    </div-->",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 530,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "afb99cecbdb832e8",
+        "type": "inject",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 260,
+        "y": 540,
+        "wires": [
+            [
+                "084cdf4c73b6a52a"
+            ]
+        ]
+    },
+    {
+        "id": "9873f80ba091e64b",
+        "type": "influxdb in",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 180,
+        "wires": [
+            [
+                "a13b58a2c9010ce4"
+            ]
+        ]
+    },
+    {
+        "id": "8f91cceec9e345c6",
+        "type": "influxdb in",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 240,
+        "wires": [
+            [
+                "85ff0cca0d57abd9"
+            ]
+        ]
+    },
+    {
+        "id": "cc1849ef55630a9c",
+        "type": "influxdb in",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 280,
+        "wires": [
+            [
+                "de2ad2e52f890fef"
+            ]
+        ]
+    },
+    {
+        "id": "6274797cadeb566e",
+        "type": "influxdb in",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 320,
+        "wires": [
+            [
+                "fd26994f809bcf37"
+            ]
+        ]
+    },
+    {
+        "id": "499fdcad9feeee75",
+        "type": "influxdb in",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 360,
+        "wires": [
+            [
+                "f9385552ce55dbc6"
+            ]
+        ]
+    },
+    {
+        "id": "667af6669f1c1c6f",
+        "type": "influxdb in",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 400,
+        "wires": [
+            [
+                "aac3c8db5a7662cc"
+            ]
+        ]
+    },
+    {
+        "id": "0f1b29e7ccd7f5fa",
+        "type": "influxdb in",
+        "z": "1a9013b247e8c387",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 460,
+        "wires": [
+            [
+                "a6da551cef550417"
+            ]
+        ]
+    },
+    {
+        "id": "5ce9fa6184d4746a",
+        "type": "ui_group",
+        "name": "test",
+        "tab": "05f65e22f9a38d3f",
+        "order": 1,
+        "disp": true,
+        "width": 30,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "05f65e22f9a38d3f",
+        "type": "ui_tab",
+        "name": "Amelioration ",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

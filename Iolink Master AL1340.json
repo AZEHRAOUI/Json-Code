@@ -1,0 +1,412 @@
+[
+    {
+        "id": "ea763451273334d4",
+        "type": "inject",
+        "z": "be73c9bc25d7619c",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 290,
+        "y": 360,
+        "wires": [
+            [
+                "473fe4f395c04b2b",
+                "12a75b2d026ce66a"
+            ]
+        ]
+    },
+    {
+        "id": "ebd33b1e106b2589",
+        "type": "json",
+        "z": "be73c9bc25d7619c",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 610,
+        "y": 320,
+        "wires": [
+            [
+                "70aab1efa02fa55b"
+            ]
+        ]
+    },
+    {
+        "id": "70aab1efa02fa55b",
+        "type": "function",
+        "z": "be73c9bc25d7619c",
+        "name": "Parse and Convert",
+        "func": "if (msg.payload.code === 200) {\n    msg.payload = msg.payload.data;\n    let word = msg.payload.value;\n\n    // Totalisateur (0,7) -> float\n    let totalisateurHex = word.substring(0, 8);\n    let totalisateur = Buffer.from(totalisateurHex, 'hex').readFloatBE(0);\n\n    // Débit (8,11) -> decimal * 0.1\n    let debitHex = word.substring(8, 12);\n    let debit = parseInt(debitHex, 16) * 0.1;\n\n// Temperature (16,19) -> decimal * 0.01\n    let temperatureHex = word.substring(16, 20);\n    let temperature = parseInt(temperatureHex, 16) * 0.01;\n\n// Pression (24,27) -> decimal * 0.01\n    let pressionHex = word.substring(24, 28);\n    let pression = parseInt(pressionHex, 16) * 0.01;\n\n// Récupérer la date et l'heure actuelles\n    var now = new Date();\n\n// Formater la date pour l'affichage\n    var year = now.getFullYear();\n    var month = (now.getMonth() + 1 < 10) ? \"0\" + (now.getMonth() + 1) : now.getMonth() + 1;\n    var day = (now.getDate() < 10) ? \"0\" + now.getDate() : now.getDate();\n\n// Formater l'heure pour l'affichage\n    var hours = (now.getHours() < 10) ? \"0\" + now.getHours() : now.getHours();\n    var minutes = (now.getMinutes() < 10) ? \"0\" + now.getMinutes() : now.getMinutes();\n    var seconds = (now.getSeconds() < 10) ? \"0\" + now.getSeconds() : now.getSeconds();\n\n// Créer une chaîne de caractères pour l'affichage de la date et de l'heure\n    var dateTimeString = day + \"/\" + month + \"/\" + year + \" \" + hours + \":\" + minutes + \":\" + seconds;\n\n\n    msg.payload = {\n    //timestamp: dateTimeString,\n    STE_MTS_airflowmeter_totalisateur: totalisateur,\n    STE_MTS_airflowmeter_debit: debit,\n    STE_MTS_airflowmeter_temperature: temperature,\n    STE_MTS_airflowmeter_pression: pression\n    };\n    return msg; \n} else {\n    msg.payload = \"error\";\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 320,
+        "wires": [
+            [
+                "4ef24a06789aa9b7",
+                "3d90d06b656b1627",
+                "31bbd2df272ba5f0",
+                "30424b59726786a5"
+            ]
+        ]
+    },
+    {
+        "id": "3f300c222c8d195b",
+        "type": "json",
+        "z": "be73c9bc25d7619c",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 610,
+        "y": 380,
+        "wires": [
+            [
+                "977b2ac52fee2aff"
+            ]
+        ]
+    },
+    {
+        "id": "977b2ac52fee2aff",
+        "type": "function",
+        "z": "be73c9bc25d7619c",
+        "name": "Parse and Convert",
+        "func": "if (msg.payload.code === 200) {\n    msg.payload = msg.payload.data;\n    let word = msg.payload.value;\n\n    // Totalisateur (0,7) -> float\n    let totalisateurHex = word.substring(0, 8);\n    let totalisateur = Buffer.from(totalisateurHex, 'hex').readFloatBE(0);\n\n    // Débit (8,11) -> decimal * 0.01\n    let debitHex = word.substring(8, 12);\n    let debit = parseInt(debitHex, 16) * 0.1;\n\n// Temperature (16,19) -> decimal * 0.01\n    let temperatureHex = word.substring(16, 20);\n    let temperature = parseInt(temperatureHex, 16) * 0.01;\n\n// Pression (24,27) -> decimal * 0.01\n    let pressionHex = word.substring(24, 28);\n    let pression = parseInt(pressionHex, 16) * 0.01;\n    // Récupérer la date et l'heure actuelles\n    var now = new Date();\n\n    // Formater la date pour l'affichage\n    var year = now.getFullYear();\n    var month = (now.getMonth() + 1 < 10) ? \"0\" + (now.getMonth() + 1) : now.getMonth() + 1;\n    var day = (now.getDate() < 10) ? \"0\" + now.getDate() : now.getDate();\n\n    // Formater l'heure pour l'affichage\n    var hours = (now.getHours() < 10) ? \"0\" + now.getHours() : now.getHours();\n    var minutes = (now.getMinutes() < 10) ? \"0\" + now.getMinutes() : now.getMinutes();\n    var seconds = (now.getSeconds() < 10) ? \"0\" + now.getSeconds() : now.getSeconds();\n\n    // Créer une chaîne de caractères pour l'affichage de la date et de l'heure\n    var dateTimeString = day + \"/\" + month + \"/\" + year + \" \" + hours + \":\" + minutes + \":\" + seconds;\n\n    msg.payload = {\n     //timestamp: dateTimeString,\n    STE_SG_airflowmeter_totalisateur: totalisateur,\n    STE_SG_airflowmeter_debit: debit,\n    STE_SG_airflowmeter_temperature: temperature,\n    STE_SG_airflowmeter_pression: pression\n    };\n    return msg; \n} else {\n    msg.payload = \"error\";\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 380,
+        "wires": [
+            [
+                "0a145521d0e518e1",
+                "9bd8d77f56a9a316",
+                "478c847ec617074e",
+                "f3f3bb9be9110021"
+            ]
+        ]
+    },
+    {
+        "id": "0a145521d0e518e1",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "name": "Débit",
+        "group": "b7458a5860bfb4bf",
+        "order": 2,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Débit_AC_SG",
+        "label": "m³/h",
+        "format": "{{msg.payload.STE_SG_airflowmeter_debit | number:2}}",
+        "min": 0,
+        "max": "700",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "350",
+        "seg2": "450",
+        "diff": false,
+        "className": "",
+        "x": 1070,
+        "y": 480,
+        "wires": [],
+        "info": "let unit = \"m\\u00B3/h\"; // Utilisation de la notation Unicode pour représenter le \"cube\"\r\n\r\n// Affichage du texte dans la console pour vérification\r\nconsole.log(unit);\r\n\r\n// Utilisez cette chaîne de texte dans votre unité de jauge dans Node-RED ou tout autre contexte.\r\n"
+    },
+    {
+        "id": "9bd8d77f56a9a316",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "name": "Temperature",
+        "group": "b7458a5860bfb4bf",
+        "order": 4,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Temperature_AC_SG",
+        "label": "°C",
+        "format": "{{msg.payload.STE_SG_airflowmeter_temperature | number:2}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1090,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "478c847ec617074e",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "name": "Pression",
+        "group": "b7458a5860bfb4bf",
+        "order": 3,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Pression_AC_SG",
+        "label": "Bar",
+        "format": "{{msg.payload.STE_SG_airflowmeter_pression| number:1}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1080,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "f3f3bb9be9110021",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "d": true,
+        "name": "Totalisateur",
+        "group": "b7458a5860bfb4bf",
+        "order": 1,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "totalisateur_AC_SG",
+        "label": "m³",
+        "format": "{{msg.payload.SG_airflowmeter_totalisateur | number:3}}",
+        "min": 0,
+        "max": "2",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "\\0000B3",
+        "x": 1090,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "31bbd2df272ba5f0",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "name": "Temperature",
+        "group": "cb32031f07acc329",
+        "order": 4,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Temperature_AC_MTS",
+        "label": "°C",
+        "format": "{{msg.payload.STE_MTS_airflowmeter_temperature | number:2}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1090,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "3d90d06b656b1627",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "name": "Débit",
+        "group": "cb32031f07acc329",
+        "order": 2,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Débit_AC_MTS",
+        "label": "m³/h",
+        "format": "{{msg.payload.STE_MTS_airflowmeter_debit| number:2}}",
+        "min": 0,
+        "max": "700",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "350",
+        "seg2": "450",
+        "diff": false,
+        "className": "",
+        "x": 1070,
+        "y": 280,
+        "wires": [],
+        "info": "let unit = \"m\\u00B3/h\"; // Utilisation de la notation Unicode pour représenter le \"cube\"\r\n\r\n// Affichage du texte dans la console pour vérification\r\nconsole.log(unit);\r\n\r\n// Utilisez cette chaîne de texte dans votre unité de jauge dans Node-RED ou tout autre contexte.\r\n"
+    },
+    {
+        "id": "4ef24a06789aa9b7",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "name": "Pression",
+        "group": "cb32031f07acc329",
+        "order": 3,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Pression_AC_MTS",
+        "label": "Bar",
+        "format": "{{msg.payload.STE_MTS_airflowmeter_pression| number:1}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1080,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "30424b59726786a5",
+        "type": "ui_gauge",
+        "z": "be73c9bc25d7619c",
+        "d": true,
+        "name": "Totalisateur",
+        "group": "cb32031f07acc329",
+        "order": 1,
+        "width": 14,
+        "height": 4,
+        "gtype": "gage",
+        "title": "totalisateur_AC_MTS",
+        "label": "m³",
+        "format": "{{msg.payload.MTS_airflowmeter_totalisateur | number:3}}",
+        "min": 0,
+        "max": "100000000",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1090,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "473fe4f395c04b2b",
+        "type": "http request",
+        "z": "be73c9bc25d7619c",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "persist": false,
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 470,
+        "y": 320,
+        "wires": [
+            [
+                "ebd33b1e106b2589"
+            ]
+        ]
+    },
+    {
+        "id": "12a75b2d026ce66a",
+        "type": "http request",
+        "z": "be73c9bc25d7619c",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "persist": false,
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 470,
+        "y": 380,
+        "wires": [
+            [
+                "3f300c222c8d195b"
+            ]
+        ]
+    },
+    {
+        "id": "b7458a5860bfb4bf",
+        "type": "ui_group",
+        "name": "Air Comprimé SG",
+        "tab": "a8b3b85cb0d095ca",
+        "order": 2,
+        "disp": true,
+        "width": "14",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cb32031f07acc329",
+        "type": "ui_group",
+        "name": "Air Comprimé MTS",
+        "tab": "a8b3b85cb0d095ca",
+        "order": 1,
+        "disp": true,
+        "width": "14",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a8b3b85cb0d095ca",
+        "type": "ui_tab",
+        "name": "Energie",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
